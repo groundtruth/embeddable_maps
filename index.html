@@ -31,16 +31,17 @@
           attribution: "By Groundtruth",
           layers: [
             {
+              type: "wms",
               url: "http://basemap{s}.pozi.com/geoserver/wms",
               options: {
                 subdomains: "1234",
                 layers: "VICMAP_CLASSIC:VicmapClassic",
-                tiled: true,
                 format: 'image/png',
                 transparent: true
               }
             },
             {
+              type: "wms",
               url: "http://services.land.vic.gov.au/catalogue/publicproxy/guest/sdm_geoserver/wms",
               options: {
                 layers: "sii:BUILDINGREG.BUSHFIRE_PRONE_AREA",
@@ -57,9 +58,11 @@
         map.attributionControl.addAttribution(mapConfig.attribution);
 
         for(var i = 0; i < mapConfig.layers.length; i++) {
-          var layerClass = L.TileLayer.WMS;
-          var layer = new layerClass(mapConfig.layers[i].url, mapConfig.layers[i].options);
-          layer.addTo(map);
+          if (mapConfig.layers[i].type === 'wms') {
+            (new L.TileLayer.WMS(mapConfig.layers[i].url, mapConfig.layers[i].options)).addTo(map);
+          } else {
+            throw Error("Don't know how to create a map layer of type '"+mapConfig.layers[i].type+"'.");
+          }
         }
       })()
     </script>
