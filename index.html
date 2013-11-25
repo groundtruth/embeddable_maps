@@ -100,14 +100,13 @@
       var eg = {
         title: "Bushfire prone areas in two different styles",
         description: "To mark big areas you can either use a transpar style (value:0.3, left) or different marks as slash-lines (right).",
-        views: [
-          { center: centers.gtHQ, zoom: 10, span: 12, attribution: "By Groundtruth" }
-        ],
+        view: { center: centers.gtHQ, zoom: 10, span: 12, attribution: "By Groundtruth" },
         layers: [
           [layers.poziBase, { server: servers.depi, options: { layers: "sii:BUILDINGREG.BUSHFIRE_PRONE_AREA", sld: sldPrefix + "sii-BUILDINGREG.BUSHFIRE_PRONE_AREA.sld" } } ],
         ]
       };
-      var egIndex = 1;
+      var egIndex = 0;
+      var viewIndex = 0;
 
 
       var egTemplate = ' \
@@ -118,9 +117,7 @@
               <p>{{description}}</p> \
             {{/description}} \
             <div class="row"> \
-              {{#views}} \
-                <div id="eg{{egIndex}}view{{viewIndex}}" class="span{{span}} map"></div> \
-              {{/views}} \
+              <div id="eg{{egIndex}}view{{viewIndex}}" class="span{{span}} map"></div> \
             </div> \
           </div> \
         </div> \
@@ -134,32 +131,29 @@
       var viewData = {
         title: eg.title,
         description: eg.description,
-        views: _(eg.views).map(function(view, viewIndex) {
-          return $.extend({}, view, { egIndex: egIndex, viewIndex: viewIndex });
-        })
+        egIndex: egIndex,
+        viewIndex: viewIndex,
+        span: eg.view.span
       };
 
       $(".examples").append(Mustache.render(egTemplate, viewData));
 
-      _(_.range(eg.views.length)).each(function(viewIndex) {
-        var view = eg.views[viewIndex];
-        var layers = eg.layers[viewIndex];
+      var view = eg.view;
+      var layers = eg.layers[viewIndex];
 
-        var map = L.map(["eg", egIndex, "view", viewIndex].join('')).setView(view.center, view.zoom);
-        map.attributionControl.setPrefix("");
-        // map.attributionControl.setPosition("bottomleft");
-        map.attributionControl.addAttribution(view.attribution);
+      var map = L.map(["eg", egIndex, "view", viewIndex].join('')).setView(view.center, view.zoom);
+      map.attributionControl.setPrefix("");
+      // map.attributionControl.setPosition("bottomleft");
+      map.attributionControl.addAttribution(view.attribution);
 
-        _(layers).each(function(config) {
-          var layerClass = config.options.tiled ? L.TileLayer.WMS : L.SingleTileWMSLayer;
-          var layer = new layerClass(config.server.url, $.extend({},
-            defaultLayerOptions,
-            config.server.options,
-            config.options
-          ));
-          layer.addTo(map);
-        });
-
+      _(layers).each(function(config) {
+        var layerClass = config.options.tiled ? L.TileLayer.WMS : L.SingleTileWMSLayer;
+        var layer = new layerClass(config.server.url, $.extend({},
+          defaultLayerOptions,
+          config.server.options,
+          config.options
+        ));
+        layer.addTo(map);
       });
 
     </script>
