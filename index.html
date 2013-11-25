@@ -50,8 +50,19 @@
     </style>
   </head>
   <body>
+
     <div class="container">
-      <div class="examples"></div>
+      <div class="examples">
+
+        <div class="row example">
+          <div class="span12">
+            <div class="row">
+              <div id="eg0view0" class="span12 map"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div> <!-- /container -->
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
@@ -66,91 +77,38 @@
 
     <script>
 
-      var sldPrefix = "https://raw.github.com/groundtruth/gt_public_styles/master/sld/";
-
-      var servers = {
-        gt: {
-          url: "http://basemap{s}.pozi.com/geoserver/wms",
-          options: { subdomains: "1234" }
-        },
-        depi: {
-          url: "http://services.land.vic.gov.au/catalogue/publicproxy/guest/sdm_geoserver/wms",
-          options: {}
-        }
-      };
-
-      var layers = {
-        poziBase: { server: servers.gt, options: { layers: "VICMAP_CLASSIC:VicmapClassic", tiled: true } }
-      };
-
-      var centers = {
-        gtHQ: [-37.815933, 144.965785],
-        woods: [-37.69563, 145.20707],
-        bay: [-37.8519, 144.92875],
-        clc: [-37.8269, 144.93085],
-        pIsl: [-38.518812, 145.330405],
-        haGa :[-37.14241, 142.52089]
-      }
-
-      // gtHQ: Groundtruth Headquaters
-      // clc: Citylink Circle, south-west of CBD
-      // pIsl: Phillip Island
-      // haGa: Halls Gap 
-
       var eg = {
-        title: "Bushfire prone areas in two different styles",
-        description: "To mark big areas you can either use a transpar style (value:0.3, left) or different marks as slash-lines (right).",
-        view: { center: centers.gtHQ, zoom: 10, span: 12, attribution: "By Groundtruth" },
+        view: { center: [-37.815933, 144.965785], zoom: 10, attribution: "By Groundtruth" },
         layers: [
-          layers.poziBase,
-          { server: servers.depi, options: { layers: "sii:BUILDINGREG.BUSHFIRE_PRONE_AREA", sld: sldPrefix + "sii-BUILDINGREG.BUSHFIRE_PRONE_AREA.sld" } }
+          {
+            server: { url: "http://basemap{s}.pozi.com/geoserver/wms", options: { subdomains: "1234" } },
+            options: {
+              layers: "VICMAP_CLASSIC:VicmapClassic",
+              tiled: true,
+              format: 'image/png',
+              transparent: true
+            }
+          },
+          {
+            server: { url: "http://services.land.vic.gov.au/catalogue/publicproxy/guest/sdm_geoserver/wms", options: {} },
+            options: {
+              layers: "sii:BUILDINGREG.BUSHFIRE_PRONE_AREA",
+              sld: "https://raw.github.com/groundtruth/gt_public_styles/master/sld/sii-BUILDINGREG.BUSHFIRE_PRONE_AREA.sld",
+              format: 'image/png',
+              transparent: true
+            }
+          }
         ]
       };
-      var egIndex = 0;
-      var viewIndex = 0;
 
-
-      var egTemplate = ' \
-        <div class="row example"> \
-          <div class="span12"> \
-            <h2>{{title}}</h2> \
-            {{#description}} \
-              <p>{{description}}</p> \
-            {{/description}} \
-            <div class="row"> \
-              <div id="eg{{egIndex}}view{{viewIndex}}" class="span{{span}} map"></div> \
-            </div> \
-          </div> \
-        </div> \
-      ';
-
-      var defaultLayerOptions = {
-        format: 'image/png',
-        transparent: true
-      };
-
-      var viewData = {
-        title: eg.title,
-        description: eg.description,
-        egIndex: egIndex,
-        viewIndex: viewIndex,
-        span: eg.view.span
-      };
-
-      $(".examples").append(Mustache.render(egTemplate, viewData));
-
-      var view = eg.view;
-      var layers = eg.layers;
-
-      var map = L.map(["eg", egIndex, "view", viewIndex].join('')).setView(view.center, view.zoom);
+      var map = L.map("eg0view0").setView(eg.view.center, eg.view.zoom);
       map.attributionControl.setPrefix("");
       // map.attributionControl.setPosition("bottomleft");
-      map.attributionControl.addAttribution(view.attribution);
+      map.attributionControl.addAttribution(eg.view.attribution);
 
-      _(layers).each(function(config) {
+      _(eg.layers).each(function(config) {
         var layerClass = config.options.tiled ? L.TileLayer.WMS : L.SingleTileWMSLayer;
         var layer = new layerClass(config.server.url, $.extend({},
-          defaultLayerOptions,
           config.server.options,
           config.options
         ));
