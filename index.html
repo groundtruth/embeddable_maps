@@ -1,93 +1,67 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Groundtruth Public Styles</title>
+    <title>Embeddable map example</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.css" />
-    <!--[if lte IE 8]>
-      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.ie.css" />
-    <![endif]-->
+    <!--[if lte IE 8]><link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.ie.css" /><![endif]-->
+
     <style>
       body {
         padding-top: 20px;
         padding-bottom: 60px;
       }
-
-
-      .container {
-        margin: 0 auto;
-        /* max-width: 1000px; */
-      }
-
-
-      .example {
-        margin-bottom: 40px
-      }
-      .map {
+      #gtMap {
+        width: 1000px;
         height: 600px;
       }
-
     </style>
   </head>
   <body>
 
-    <div class="container">
-      <div class="examples">
+    <div id="gtMap"></div>
 
-        <div class="row example">
-          <div class="span12">
-            <div class="row">
-              <div id="eg0view0" class="span12 map"></div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div> <!-- /container -->
-
-    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
-
     <script>
-
-      var eg = {
-        view: { center: [-37.815933, 144.965785], zoom: 10, attribution: "By Groundtruth" },
-        layers: [
-          {
-            server: { url: "http://basemap{s}.pozi.com/geoserver/wms", options: { subdomains: "1234" } },
-            options: {
-              layers: "VICMAP_CLASSIC:VicmapClassic",
-              tiled: true,
-              format: 'image/png',
-              transparent: true
+      (function() {
+        var mapConfig = {
+          view: { center: [-37.815933, 144.965785], zoom: 10, attribution: "By Groundtruth" },
+          layers: [
+            {
+              url: "http://basemap{s}.pozi.com/geoserver/wms",
+              options: {
+                subdomains: "1234",
+                layers: "VICMAP_CLASSIC:VicmapClassic",
+                tiled: true,
+                format: 'image/png',
+                transparent: true
+              }
+            },
+            {
+              url: "http://services.land.vic.gov.au/catalogue/publicproxy/guest/sdm_geoserver/wms",
+              options: {
+                layers: "sii:BUILDINGREG.BUSHFIRE_PRONE_AREA",
+                sld: "https://raw.github.com/groundtruth/gt_public_styles/master/sld/sii-BUILDINGREG.BUSHFIRE_PRONE_AREA.sld",
+                format: 'image/png',
+                transparent: true
+              }
             }
-          },
-          {
-            server: { url: "http://services.land.vic.gov.au/catalogue/publicproxy/guest/sdm_geoserver/wms", options: {} },
-            options: {
-              layers: "sii:BUILDINGREG.BUSHFIRE_PRONE_AREA",
-              sld: "https://raw.github.com/groundtruth/gt_public_styles/master/sld/sii-BUILDINGREG.BUSHFIRE_PRONE_AREA.sld",
-              format: 'image/png',
-              transparent: true
-            }
-          }
-        ]
-      };
+          ]
+        };
 
-      var map = L.map("eg0view0").setView(eg.view.center, eg.view.zoom);
-      map.attributionControl.setPrefix("");
-      // map.attributionControl.setPosition("bottomleft");
-      map.attributionControl.addAttribution(eg.view.attribution);
+        var map = L.map("gtMap").setView(mapConfig.view.center, mapConfig.view.zoom);
+        map.attributionControl.setPrefix("");
+        map.attributionControl.addAttribution(mapConfig.view.attribution);
 
-      _(eg.layers).each(function(config) {
-        var layerClass = L.TileLayer.WMS;
-        var layer = new layerClass(config.server.url, _({}).extend(config.server.options, config.options));
-        layer.addTo(map);
-      });
-
+        for(var i = 0; i < mapConfig.layers.length; i++) {
+          var layerClass = L.TileLayer.WMS;
+          var layer = new layerClass(mapConfig.layers[i].url, mapConfig.layers[i].options);
+          layer.addTo(map);
+        }
+      })()
     </script>
+
   </body>
 </html>
 
