@@ -26,35 +26,34 @@
     <script>
       (function() {
         var mapConfig = {
-          center: [-37.815933, 144.965785],
+          center: [-36.38106, 145.39937],
           zoom: 10,
-          attribution: "By Groundtruth",
+          attribution: 'Greater Shepparton',
           layers: [
             {
-              type: "wms",
-              url: "http://basemap{s}.pozi.com/geoserver/wms",
+              type: 'wms',
+              url: 'http://basemap{s}.pozi.com/geoserver/wms',
               options: {
-                subdomains: "1234",
-                layers: "VICMAP_CLASSIC:VicmapClassic",
+                subdomains: '1234',
+                layers: 'VICMAP_CLASSIC:VicmapClassic',
                 format: 'image/png',
                 transparent: true
               }
             },
             {
-              type: "wms",
-              url: "http://services.land.vic.gov.au/catalogue/publicproxy/guest/sdm_geoserver/wms",
+              type: 'wms',
+              url: 'http://shepparton.pozi.com/geoserver/wms',
               options: {
-                layers: "sii:BUILDINGREG.BUSHFIRE_PRONE_AREA",
-                sld: "https://raw.github.com/groundtruth/gt_public_styles/master/sld/sii-BUILDINGREG.BUSHFIRE_PRONE_AREA.sld",
-                format: 'image/png',
+                layers: 'SHEPPARTON:gs_waste_collection_zone',
+                format: 'image/png8',
                 transparent: true
               }
             }
           ]
         };
 
-        var map = L.map("gtMap").setView(mapConfig.center, mapConfig.zoom);
-        map.attributionControl.setPrefix("");
+        var map = L.map('gtMap').setView(mapConfig.center, mapConfig.zoom);
+        map.attributionControl.setPrefix('');
         map.attributionControl.addAttribution(mapConfig.attribution);
 
         for(var i = 0; i < mapConfig.layers.length; i++) {
