@@ -34,6 +34,7 @@
             if (mapConfig.layers[i].type === 'wms') {
               (new L.TileLayer.WMS(mapConfig.layers[i].url, mapConfig.layers[i].options)).addTo(map);
             } else if (mapConfig.layers[i].type === 'mapquest-mapLayer') {
+              // http://developer.mapquest.com/web/documentation/plugins/leaflet/v0.1/map
               MQ.mapLayer().addTo(map);
             } else {
               throw Error("Don't know how to create a map layer of type '"+mapConfig.layers[i].type+"'.");
@@ -41,24 +42,11 @@
           }
         };
 
-        // http://developer.mapquest.com/web/documentation/plugins/leaflet/v0.1/map
-        // http://developer.mapquest.com/web/info/account/app-keys
-
         buildMap({
           center: [-36.38106, 145.39937],
           zoom: 10,
           attribution: 'Greater Shepparton',
           layers: [
-            // {
-            //   type: 'wms',
-            //   url: 'http://basemap{s}.pozi.com/geoserver/wms',
-            //   options: {
-            //     subdomains: '1234',
-            //     layers: 'VICMAP_CLASSIC:VicmapClassic',
-            //     format: 'image/png',
-            //     transparent: true
-            //   }
-            // },
             { type: 'mapquest-mapLayer' },
             {
               type: 'wms',
